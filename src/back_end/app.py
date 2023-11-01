@@ -4,6 +4,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+# journal prompts from :https://mindfulhealthsolutions.com/20-journaling-prompts-for-mental-health/ 
 journal_prompts=[
     "How would you spend your perfect day off? What makes that perfect for you?",
     "Describe yourself in ten words. Why do those words come to mind?",
