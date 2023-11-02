@@ -16,7 +16,7 @@ db = firestore.client()
 
 # journal prompts from :https://mindfulhealthsolutions.com/20-journaling-prompts-for-mental-health/ 
 journal_prompts={
-    0:"What is your passion?",
+    0:"What's the most memorable thing that happened to you today?",
     1:"How would you spend your perfect day off? What makes that perfect for you?",
     2:"Describe yourself in ten words. Why do those words come to mind?",
     3:"What makes you feel the most inspired?",
@@ -32,10 +32,11 @@ journal_prompts={
 
 @app.route('/api/journal_prompt', methods=['GET'])
 def get_journal_prompt():
-    promptId = random.randint(0, len(journal_prompts)-1)
+    # promptId = random.randint(0, len(journal_prompts)-1)
+    promptId = 2
     return jsonify({'promptId': promptId, 'prompt':journal_prompts[promptId]})
 
-@app.route('/save', methods=['POST'])
+@app.route('/api/save', methods=['POST'])
 def save_journal():
     if not request.is_json:
         abort(400)
@@ -47,8 +48,25 @@ def save_journal():
         return jsonify({"status": "success", "docId": journal_ref.id}), 200
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
-    
-    # return jsonify({'saved': True})
+
+"""
+Get the past journals by this user for this prompt
+"""
+
+@app.route('/api/past_journals', methods=['GET','POST'])
+def get_past_journals():
+    if not request.is_json:
+        abort(400)
+    obj = request.get_json()
+    # print(obj)
+    try:
+        entries = db.collection('journals/'+obj['user']+'/'+str(obj['promptId'])).get()
+        entry_dict = {doc.id: doc.to_dict() for doc in entries}
+        print(entry_dict)
+        return jsonify({"status":"success", "entries":entry_dict})
+    except Exception as e:
+        print("error: " + str(e))
+        return jsonify({"status": "error", "message": str(e)})
 
 if __name__ == '__main__':
     app.run(debug=True)
