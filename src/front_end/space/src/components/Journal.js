@@ -3,6 +3,7 @@ import '../style/Journal.css';
 
 // api functions
 async function postJSON(data){
+    console.log(data)
     try{
         const response = await fetch("http://127.0.0.1:5000/save", {
             method: "POST",

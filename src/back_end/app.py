@@ -2,8 +2,17 @@ from flask import Flask, request, jsonify, abort
 from flask_cors import CORS
 import random
 
+import firebase_admin
+from firebase_admin import credentials, firestore
+
 app = Flask(__name__)
 CORS(app)
+
+# Firebase setup
+cred = credentials.Certificate("../../key.json")
+firebase_admin.initialize_app(cred)
+
+db = firestore.client()
 
 # journal prompts from :https://mindfulhealthsolutions.com/20-journaling-prompts-for-mental-health/ 
 journal_prompts={
@@ -25,16 +34,21 @@ journal_prompts={
 def get_journal_prompt():
     promptId = random.randint(0, len(journal_prompts)-1)
     return jsonify({'promptId': promptId, 'prompt':journal_prompts[promptId]})
-    
+
 @app.route('/save', methods=['POST'])
 def save_journal():
     if not request.is_json:
         abort(400)
     obj = request.get_json()
-    print(obj)
-    # print(obj["entry"])
     
-    return jsonify({'saved': True})
+    try:
+        journal_ref = db.collection('journals/'+obj['user']+'/'+str(obj['promptId'])).document()
+        journal_ref.set(obj)
+        return jsonify({"status": "success", "docId": journal_ref.id}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+    
+    # return jsonify({'saved': True})
 
 if __name__ == '__main__':
     app.run(debug=True)
