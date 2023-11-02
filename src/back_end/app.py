@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, abort
 from flask_cors import CORS
+import random
 
 app = Flask(__name__)
 CORS(app)
@@ -22,11 +23,9 @@ journal_prompts={
 
 @app.route('/api/journal_prompt', methods=['GET'])
 def get_journal_prompt():
-    import random
-    # prompt = random.choice(journal_prompts)
-    promptId = random.randint(0, len(journal_prompts))
-    return jsonify({'id': promptId, 'prompt':journal_prompts[promptId]})
-
+    promptId = random.randint(0, len(journal_prompts)-1)
+    return jsonify({'promptId': promptId, 'prompt':journal_prompts[promptId]})
+    
 @app.route('/save', methods=['POST'])
 def save_journal():
     if not request.is_json:

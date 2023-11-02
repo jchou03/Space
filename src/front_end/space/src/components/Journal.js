@@ -18,15 +18,15 @@ async function postJSON(data){
     }
 }
 
-function saveJournal(entry){
-    var testObj = {entry: entry}
-    console.log(testObj)
-    postJSON(testObj)
+function saveJournal(user, promptId, entry){
+    postJSON({user: user, promptId: promptId, entry: entry})
 }
 
 const Journal = () => {
-    const [entry, setEntry] = useState('');
-    const [prompt, setPrompt] = useState('Loading...');
+    const [user, setUser] = useState('generalUser')
+    const [entry, setEntry] = useState('')
+    const [promptId, setPromptId] = useState(0)
+    const [prompt, setPrompt] = useState('Loading...')
 
     useEffect(() => {
         fetch('http://127.0.0.1:5000/api/journal_prompt')
@@ -37,6 +37,8 @@ const Journal = () => {
                 return response.json()
             })
             .then(data => {
+                console.log(data)
+                setPromptId(data.promptId)
                 setPrompt(data.prompt)
             })
             .catch(error => {
@@ -54,9 +56,9 @@ const Journal = () => {
                 onChange={(e) => setEntry(e.target.value)}
                 placeholder="Write your thoughts..."
             />
-            <button className="journal-submit" onClick={() => {saveJournal(entry)}}>Save</button>
+            <button className="journal-submit" onClick={() => {saveJournal(user, promptId, entry)}}>Save</button>
         </div>
-    );
-};
+    )
+}
 
-export default Journal;
+export default Journal
