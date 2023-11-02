@@ -32,8 +32,8 @@ journal_prompts={
 
 @app.route('/api/journal_prompt', methods=['GET'])
 def get_journal_prompt():
-    # promptId = random.randint(0, len(journal_prompts)-1)
-    promptId = 2
+    promptId = random.randint(0, len(journal_prompts)-1)
+    # promptId = 2
     return jsonify({'promptId': promptId, 'prompt':journal_prompts[promptId]})
 
 @app.route('/api/save', methods=['POST'])
@@ -49,6 +49,7 @@ def save_journal():
             journal_ref = db.collection(path).document(obj['id'])        
             journal_ref.update(obj)
         else:
+            print("creating new journal entry for new prompt")
             journal_ref = db.collection(path).document()
             journal_ref.set(obj)
         return jsonify({"status": "success", "docId": journal_ref.id}), 200

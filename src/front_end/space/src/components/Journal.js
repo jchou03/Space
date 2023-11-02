@@ -61,6 +61,7 @@ const Journal = () => {
             })
             .then(entries => {
                 let arrEntries = Array.from(entries)
+                if(arrEntries.length == 0) return
                 arrEntries.sort((a, b) => {return -a.date.localeCompare(b.date)})
                 console.log(arrEntries)
                 setPrevEntries(arrEntries)
@@ -102,7 +103,10 @@ const Journal = () => {
             <div style={{"width":"100%"}}>
                 {prevEntries.length > 0 ? prevEntries.map(entryObj => {
                     return <JournalEntry key={entryObj.id} date={entryObj.date} entry={entryObj.entry}/>
-                }) : <p>No previous entries found.</p>}
+                }) 
+                : <></>
+                // <p>No previous entries found.</p>
+            }
             
             </div>
         </div>
