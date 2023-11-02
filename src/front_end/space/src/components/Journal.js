@@ -45,25 +45,38 @@ const Journal = () => {
         fetch('http://127.0.0.1:5000/api/journal_prompt')
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error('Network response was not ok')
                 }
-                return response.json();
+                return response.json()
             })
             .then(data => {
-                console.log(data);
-                setPromptId(data.promptId);
-                setPrompt(data.prompt);
-                return getPreviousEntries(user, data.promptId);  // returning the promise
+                console.log(data)
+                setPromptId(data.promptId)
+                setPrompt(data.prompt)
+                return getPreviousEntries(user, data.promptId)  // returning the promise
             })
             .then(entries => {
-                console.log("Previous Entries: ", entries);
-                setPrevEntries(entries);
+                let arrEntries = Array.from(entries)
+                // if (Array.isArray(arrEntries)) {
+                //     console.log("it is an array!")
+                //     console.log(typeof arrEntries)
+                //     console.log(arrEntries)
+                //     setPrevEntries([...arrEntries]);
+                //     console.log(prevEntries)
+                //     console.log("prevEntries: " + typeof prevEntries)
+                // } else {
+                //     console.warn('Received data is not an array:', entries);
+                // }
+                // console.log("Previous Entries: ", arrEntries)
+                // console.log("type of arrEntries is: " + typeof arrEntries)
+                setPrevEntries(arrEntries)
+                console.log("prevEntries: " + prevEntries)
             })
             .catch(error => {
-                console.error("There was a problem with fetching the journal prompt. Error message: " + error.message);
-                setPrompt("What's the most memorable thing that happened to you today?");
-            });
-    }, []);
+                console.error("There was a problem with fetching the journal prompt. Error message: " + error.message)
+                setPrompt("What's the most memorable thing that happened to you today?")
+            })
+    }, [])
     
 
     return (
@@ -79,7 +92,12 @@ const Journal = () => {
             <div>
                 <ul>
                     {prevEntries.length > 0 ? prevEntries.map(entryObj => {
-                        return <JournalEntry key={entryObj.id} entry={entryObj.content}/>  // Assuming each entryObj has an 'id' and 'content' attribute
+                        console.log(prevEntries.length)
+                        for(let i = 0; i < prevEntries.length; i++){
+                            console.log(prevEntries[i])
+                        }
+                        return <p key={entryObj.id}>{entryObj.entry}</p>
+                        // return <JournalEntry key={entryObj.id} entry={entryObj.entry}/>  // Assuming each entryObj has an 'id' and 'content' attribute
                     }) : <p>No previous entries found.</p>}
                 </ul>
             </div>

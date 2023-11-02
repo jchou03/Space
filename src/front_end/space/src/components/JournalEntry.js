@@ -1,6 +1,6 @@
-const JournalEntry = ({entry}) => {
+const JournalEntry = ({key,entry}) => {
     return (
-        <div>
+        <div key={key}>
             <p>{entry}</p>
         </div>
     )
