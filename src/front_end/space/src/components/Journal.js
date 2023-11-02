@@ -20,7 +20,7 @@ const Journal = () => {
                 console.error("There was a problem with fetching the journal prompt. Error message: " + error.message)
                 setPrompt("What's the most memorable thing that happened to you today?")
             })
-    })
+    }, [])
 
     return (
         <div className="journal-container">
@@ -31,7 +31,7 @@ const Journal = () => {
                 onChange={(e) => setEntry(e.target.value)}
                 placeholder="Write your thoughts..."
             />
-            <button className="journal-submit">Save</button>
+            <button className="journal-submit" onClick={() => console.log("message: " + entry)}>Save</button>
         </div>
     );
 };
