@@ -1,6 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import '../style/Journal.css';
 
+// api functions
+async function postJSON(data){
+    try{
+        const response = await fetch("http://127.0.0.1:5000/save", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        })
+        const result = await response.json()
+        console.log("Success: ", result)
+    }catch (e) {
+        console.log("Error: " + e)
+    }
+}
+
+function saveJournal(entry){
+    var testObj = {entry: entry}
+    console.log(testObj)
+    postJSON(testObj)
+}
+
 const Journal = () => {
     const [entry, setEntry] = useState('');
     const [prompt, setPrompt] = useState('Loading...');
@@ -31,7 +54,7 @@ const Journal = () => {
                 onChange={(e) => setEntry(e.target.value)}
                 placeholder="Write your thoughts..."
             />
-            <button className="journal-submit" onClick={() => console.log("message: " + entry)}>Save</button>
+            <button className="journal-submit" onClick={() => {saveJournal(entry)}}>Save</button>
         </div>
     );
 };
