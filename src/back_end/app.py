@@ -41,12 +41,19 @@ def save_journal():
     if not request.is_json:
         abort(400)
     obj = request.get_json()
-    
+    print(obj)
     try:
-        journal_ref = db.collection('journals/'+obj['user']+'/'+str(obj['promptId'])).document()
-        journal_ref.set(obj)
+        path = 'journals/'+obj['user']+'/'+str(obj['promptId'])
+        journal_ref = None
+        if obj['id'] != -1:
+            journal_ref = db.collection(path).document(obj['id'])        
+            journal_ref.update(obj)
+        else:
+            journal_ref = db.collection(path).document()
+            journal_ref.set(obj)
         return jsonify({"status": "success", "docId": journal_ref.id}), 200
     except Exception as e:
+        print(e)
         return jsonify({"status": "error", "message": str(e)}), 500
 
 """
@@ -62,7 +69,9 @@ def get_past_journals():
         entries = db.collection('journals/'+obj['user']+'/'+str(obj['promptId'])).get()
         entry_list = []
         for doc in entries:
-            entry_list.append(doc.to_dict())
+            doc_dict = doc.to_dict()
+            doc_dict['id'] = doc.id
+            entry_list.append(doc_dict)
         # print(entry_list)
         return jsonify({"status":"success", "entries":entry_list})
     except Exception as e:

@@ -30,9 +30,11 @@ async function getPreviousEntries(user, promptId){
     return []; // Return empty array if no entries found to avoid errors
 }
 
-function saveJournal(user, promptId, entry){
+function saveJournal(user, promptId, entry, curEntry){
     const currentDate = new Date().toISOString().split('T')[0];
-    postJSON({user: user, promptId: promptId, entry: entry, date: currentDate}, "http://127.0.0.1:5000/api/save")
+    const journal = {user: user, promptId: promptId, entry: entry, date: currentDate, id: curEntry != null ? curEntry.id : -1}
+    console.log(journal)
+    postJSON(journal, "http://127.0.0.1:5000/api/save")
 }
 
 const Journal = () => {
@@ -41,6 +43,7 @@ const Journal = () => {
     const [promptId, setPromptId] = useState(0)
     const [prompt, setPrompt] = useState('Loading...')
     const [prevEntries, setPrevEntries] = useState([])
+    const [curEntry, setCurEntry] = useState(null)
 
     useEffect(() => {
         fetch('http://127.0.0.1:5000/api/journal_prompt')
@@ -51,15 +54,33 @@ const Journal = () => {
                 return response.json()
             })
             .then(data => {
-                console.log(data)
+                // console.log(data)
                 setPromptId(data.promptId)
                 setPrompt(data.prompt)
                 return getPreviousEntries(user, data.promptId)  // returning the promise
             })
             .then(entries => {
                 let arrEntries = Array.from(entries)
+                arrEntries.sort((a, b) => {return -a.date.localeCompare(b.date)})
+                console.log(arrEntries)
                 setPrevEntries(arrEntries)
-                console.log("prevEntries: " + prevEntries)
+                // console.log("prevEntries: " + prevEntries)
+
+
+                const currentDate = new Date().toISOString().split('T')[0];
+                // just need to check the last entry since array is sorted in reverse order
+                if(arrEntries[0].date == currentDate){
+                
+                    setCurEntry(arrEntries[0])
+
+                    setEntry(arrEntries[0].entry)
+                    console.log("curEntry" + arrEntries[0])
+                    
+                    arrEntries.shift()
+                    setPrevEntries(arrEntries)
+                    console.log(arrEntries)
+                }
+                
             })
             .catch(error => {
                 console.error("There was a problem with fetching the journal prompt. Error message: " + error.message)
@@ -77,7 +98,7 @@ const Journal = () => {
                 onChange={(e) => setEntry(e.target.value)}
                 placeholder="Write your thoughts..."
             />
-            <button className="journal-submit" onClick={() => {saveJournal(user, promptId, entry)}}>Save</button>
+            <button className="journal-submit" onClick={() => {saveJournal(user, promptId, entry, curEntry)}}>Save</button>
             <div style={{"width":"100%"}}>
                 {prevEntries.length > 0 ? prevEntries.map(entryObj => {
                     return <JournalEntry key={entryObj.id} date={entryObj.date} entry={entryObj.entry}/>
