@@ -77,10 +77,9 @@ const Journal = () => {
                 placeholder="Write your thoughts..."
             />
             <button className="journal-submit" onClick={() => {saveJournal(user, promptId, entry)}}>Save</button>
-            <div>
+            <div style={{"width":"100%"}}>
                 {prevEntries.length > 0 ? prevEntries.map(entryObj => {
-                    // return <p key={entryObj.id}>{entryObj.entry}</p>
-                    return <JournalEntry key={entryObj.id} date="1/1/22" entry={entryObj.entry}/>  // Assuming each entryObj has an 'id' and 'content' attribute
+                    return <JournalEntry key={entryObj.id} date="1/1/22" entry={entryObj.entry}/>
                 }) : <p>No previous entries found.</p>}
             
             </div>

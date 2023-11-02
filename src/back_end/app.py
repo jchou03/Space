@@ -58,13 +58,12 @@ def get_past_journals():
     if not request.is_json:
         abort(400)
     obj = request.get_json()
-    # print(obj)
     try:
         entries = db.collection('journals/'+obj['user']+'/'+str(obj['promptId'])).get()
         entry_list = []
         for doc in entries:
             entry_list.append(doc.to_dict())
-        # print(entry_dict)
+        # print(entry_list)
         return jsonify({"status":"success", "entries":entry_list})
     except Exception as e:
         print("error: " + str(e))
