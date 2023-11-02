@@ -23,8 +23,11 @@ async function postJSON(data, endpoint){
 }
 
 async function getPreviousEntries(user, promptId){
-    // console.log("")
-    return postJSON({user: user, promptId: promptId}, "http://127.0.0.1:5000/api/past_journals")
+    const result = await postJSON({ user: user, promptId: promptId }, "http://127.0.0.1:5000/api/past_journals");
+    if (result && result.entries) {
+        return result.entries;
+    }
+    return []; // Return empty array if no entries found to avoid errors
 }
 
 function saveJournal(user, promptId, entry){
@@ -41,29 +44,27 @@ const Journal = () => {
     useEffect(() => {
         fetch('http://127.0.0.1:5000/api/journal_prompt')
             .then(response => {
-                if(!response.ok){
-                    throw new Error('Network response was not ok')
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
                 }
-                return response.json()
+                return response.json();
             })
             .then(data => {
-                console.log(data)
-                setPromptId(data.promptId)
-                setPrompt(data.prompt)
-                return getPreviousEntries(user, data.promptId)
+                console.log(data);
+                setPromptId(data.promptId);
+                setPrompt(data.prompt);
+                return getPreviousEntries(user, data.promptId);  // returning the promise
             })
-            .then(async data => {
-                let temp = await getPreviousEntries(user, 2)
-                console.log("prevEntries: " + temp)
-                console.log(typeof temp)
-                setPrevEntries(temp)
-                console.log("prevEntries len: " + prevEntries.length)
+            .then(entries => {
+                console.log("Previous Entries: ", entries);
+                setPrevEntries(entries);
             })
             .catch(error => {
-                console.error("There was a problem with fetching the journal prompt. Error message: " + error.message)
-                setPrompt("What's the most memorable thing that happened to you today?")
-            })
-    }, [])
+                console.error("There was a problem with fetching the journal prompt. Error message: " + error.message);
+                setPrompt("What's the most memorable thing that happened to you today?");
+            });
+    }, []);
+    
 
     return (
         <div className="journal-container">
@@ -77,14 +78,9 @@ const Journal = () => {
             <button className="journal-submit" onClick={() => {saveJournal(user, promptId, entry)}}>Save</button>
             <div>
                 <ul>
-                    {
-                        [124].map(() => {
-                            return <JournalEntry entry="my previous journal entry" />
-                        })
-                    }
-                    {prevEntries.length > 0 ? prevEntries.map(() => {
-                        return <JournalEntry entry="my previous journal entry"/>
-                    }) : <p>test</p>}
+                    {prevEntries.length > 0 ? prevEntries.map(entryObj => {
+                        return <JournalEntry key={entryObj.id} entry={entryObj.content}/>  // Assuming each entryObj has an 'id' and 'content' attribute
+                    }) : <p>No previous entries found.</p>}
                 </ul>
             </div>
         </div>

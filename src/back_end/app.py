@@ -62,7 +62,7 @@ def get_past_journals():
     try:
         entries = db.collection('journals/'+obj['user']+'/'+str(obj['promptId'])).get()
         entry_dict = {doc.id: doc.to_dict() for doc in entries}
-        print(entry_dict)
+        # print(entry_dict)
         return jsonify({"status":"success", "entries":entry_dict})
     except Exception as e:
         print("error: " + str(e))
