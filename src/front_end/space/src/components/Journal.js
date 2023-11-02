@@ -31,7 +31,8 @@ async function getPreviousEntries(user, promptId){
 }
 
 function saveJournal(user, promptId, entry){
-    postJSON({user: user, promptId: promptId, entry: entry}, "http://127.0.0.1:5000/api/save")
+    const currentDate = new Date().toISOString().split('T')[0];
+    postJSON({user: user, promptId: promptId, entry: entry, date: currentDate}, "http://127.0.0.1:5000/api/save")
 }
 
 const Journal = () => {
@@ -79,7 +80,7 @@ const Journal = () => {
             <button className="journal-submit" onClick={() => {saveJournal(user, promptId, entry)}}>Save</button>
             <div style={{"width":"100%"}}>
                 {prevEntries.length > 0 ? prevEntries.map(entryObj => {
-                    return <JournalEntry key={entryObj.id} date="1/1/22" entry={entryObj.entry}/>
+                    return <JournalEntry key={entryObj.id} date={entryObj.date} entry={entryObj.entry}/>
                 }) : <p>No previous entries found.</p>}
             
             </div>
