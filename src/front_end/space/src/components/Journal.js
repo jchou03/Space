@@ -57,18 +57,6 @@ const Journal = () => {
             })
             .then(entries => {
                 let arrEntries = Array.from(entries)
-                // if (Array.isArray(arrEntries)) {
-                //     console.log("it is an array!")
-                //     console.log(typeof arrEntries)
-                //     console.log(arrEntries)
-                //     setPrevEntries([...arrEntries]);
-                //     console.log(prevEntries)
-                //     console.log("prevEntries: " + typeof prevEntries)
-                // } else {
-                //     console.warn('Received data is not an array:', entries);
-                // }
-                // console.log("Previous Entries: ", arrEntries)
-                // console.log("type of arrEntries is: " + typeof arrEntries)
                 setPrevEntries(arrEntries)
                 console.log("prevEntries: " + prevEntries)
             })
@@ -90,16 +78,11 @@ const Journal = () => {
             />
             <button className="journal-submit" onClick={() => {saveJournal(user, promptId, entry)}}>Save</button>
             <div>
-                <ul>
-                    {prevEntries.length > 0 ? prevEntries.map(entryObj => {
-                        console.log(prevEntries.length)
-                        for(let i = 0; i < prevEntries.length; i++){
-                            console.log(prevEntries[i])
-                        }
-                        return <p key={entryObj.id}>{entryObj.entry}</p>
-                        // return <JournalEntry key={entryObj.id} entry={entryObj.entry}/>  // Assuming each entryObj has an 'id' and 'content' attribute
-                    }) : <p>No previous entries found.</p>}
-                </ul>
+                {prevEntries.length > 0 ? prevEntries.map(entryObj => {
+                    // return <p key={entryObj.id}>{entryObj.entry}</p>
+                    return <JournalEntry key={entryObj.id} date="1/1/22" entry={entryObj.entry}/>  // Assuming each entryObj has an 'id' and 'content' attribute
+                }) : <p>No previous entries found.</p>}
+            
             </div>
         </div>
     )
